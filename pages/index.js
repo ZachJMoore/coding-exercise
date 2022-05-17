@@ -32,7 +32,7 @@ const InfoItem = styled(Box)`
 
 export default function Home() {
   // Data
-  const [searchResults, setSearchData] = React.useState([]);
+  const [searchResults, setSearchResults] = React.useState([]);
   const [errorMessage, setErrorMessage] = React.useState(null);
   const [isFetching, setIsFetching] = React.useState(true);
 
@@ -51,7 +51,7 @@ export default function Home() {
     [selectedStateIndex]
   );
   const row = React.useMemo(
-    () => searchResults[selectedRowIndex],
+    () => (selectedRowIndex !== null ? searchResults[selectedRowIndex] : null),
     [selectedRowIndex, searchResults]
   );
 
@@ -75,7 +75,11 @@ export default function Home() {
 
         const res = await fetch(url);
         const data = await res.json();
-        setSearchData(data.results);
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        setSearchResults(data.results);
       } catch (err) {
         let errorMessage = "Something went wrong. Please try again.";
         if (typeof err === "string") {
